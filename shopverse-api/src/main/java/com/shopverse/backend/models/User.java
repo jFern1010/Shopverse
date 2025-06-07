@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -42,9 +44,11 @@ public class User {
 	private String phone;
 
 	@OneToMany(mappedBy = "user")
+	@JsonIgnore
 	List<CartItem> cartItems = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
+	@JsonIgnore
 	List<Order> orders = new ArrayList<>();
 
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -55,7 +59,6 @@ public class User {
 
 	public User(Long id, String userName, String email, String password, String address, String phone,
 			List<CartItem> cartItems, List<Order> orders, Set<Role> roles) {
-		super();
 		this.id = id;
 		this.userName = userName;
 		this.email = email;

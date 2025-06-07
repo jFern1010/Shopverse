@@ -2,5 +2,5 @@ package com.shopverse.backend.models;
 
 public enum Status {
 
-	PENDING, SHIPPED, DELIVERED, CANCELED
+	PENDING, SHIPPED, DELIVERED, CANCELLED
 }

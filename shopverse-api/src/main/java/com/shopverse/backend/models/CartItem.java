@@ -23,11 +23,16 @@ public class CartItem {
 	@JoinColumn(name = "product_id")
 	private Product product;
 
-	public CartItem(Long id, int quantity, User user, Product product) {
+	@ManyToOne
+	@JoinColumn(name = "cart_id")
+	private Cart cart;
+
+	public CartItem(Long id, int quantity, User user, Product product, Cart cart) {
 		this.id = id;
 		this.quantity = quantity;
 		this.user = user;
 		this.product = product;
+		this.cart = cart;
 	}
 
 	public CartItem() {
@@ -65,9 +70,18 @@ public class CartItem {
 		this.product = product;
 	}
 
+	public Cart getCart() {
+		return cart;
+	}
+
+	public void setCart(Cart cart) {
+		this.cart = cart;
+	}
+
 	@Override
 	public String toString() {
-		return "CartItem [id=" + id + ", quantity=" + quantity + ", user=" + user + ", product=" + product + "]";
+		return "CartItem [id=" + id + ", quantity=" + quantity + ", user=" + user + ", product=" + product + ", cart"
+				+ cart + "]";
 	}
 
 }
