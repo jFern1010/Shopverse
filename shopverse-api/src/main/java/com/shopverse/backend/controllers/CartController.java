@@ -1,12 +1,21 @@
 package com.shopverse.backend.controllers;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.shopverse.backend.models.Cart;
+import com.shopverse.backend.models.CartItem;
+import com.shopverse.backend.repositories.CartRepository;
 import com.shopverse.backend.services.CartService;
 
 @RestController
@@ -14,11 +23,26 @@ import com.shopverse.backend.services.CartService;
 public class CartController {
 
 	private final CartService cartService;
+	private final CartRepository cartRepo;
 
-	public CartController(CartService cartService) {
+	public CartController(CartService cartService, CartRepository cartRepo) {
 		this.cartService = cartService;
+		this.cartRepo = cartRepo;
 	}
 	
+	@GetMapping("/{userId}")
+	public ResponseEntity<?> viewCart(@PathVariable long userId) {
+		Cart cart = cartRepo.findByUserId(userId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+
+		List<CartItem> cartItems = cart.getItems();
+
+		if (cartItems.isEmpty()) {
+			return ResponseEntity.ok("Cart is empty");
+		}
+		return ResponseEntity.ok(cartItems);
+	}
+
 	@PostMapping("/add")
 	public ResponseEntity<String> addToCart(@RequestParam long userId, @RequestParam long productId,
 			@RequestParam int quantity)
