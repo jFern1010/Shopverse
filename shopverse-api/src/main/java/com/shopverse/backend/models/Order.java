@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,18 +35,21 @@ public class Order {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@OneToMany(mappedBy = "order")
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
+	@Column(nullable = false)
+	private double total;
+
 	public Order(Long id, LocalDateTime orderDate, String shippingAddress, Status status, User user,
-			List<OrderItem> orderItems) {
-		super();
+			List<OrderItem> orderItems, double total) {
 		this.id = id;
 		this.orderDate = orderDate;
 		this.shippingAddress = shippingAddress;
 		this.status = status;
 		this.user = user;
 		this.orderItems = orderItems;
+		this.total = total;
 	}
 
 	public Order() {
@@ -98,10 +103,19 @@ public class Order {
 		this.orderItems = orderItems;
 	}
 
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", orderDate=" + orderDate + ", shippingAddress=" + shippingAddress + ", status="
-				+ status + ", user=" + user + "]";
+				+ status + ", user=" + user + ", total=" + total + "]";
 	}
+
 
 }

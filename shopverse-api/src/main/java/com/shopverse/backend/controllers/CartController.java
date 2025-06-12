@@ -1,6 +1,8 @@
 package com.shopverse.backend.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +42,15 @@ public class CartController {
 		if (cartItems.isEmpty()) {
 			return ResponseEntity.ok("Cart is empty");
 		}
-		return ResponseEntity.ok(cartItems);
+		
+		double totalPrice = cartItems.stream().mapToDouble(x -> x.getProduct().getPrice() * x.getQuantity()).sum();
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("items", cartItems);
+		response.put("totalPrice", totalPrice);
+
+		return ResponseEntity.ok(response);
+
 	}
 
 	@PostMapping("/add")
