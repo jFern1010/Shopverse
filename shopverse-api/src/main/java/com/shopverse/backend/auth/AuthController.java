@@ -1,0 +1,83 @@
+package com.shopverse.backend.auth;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.shopverse.backend.models.User;
+import com.shopverse.backend.repositories.UserRepository;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/shopverse/auth")
+public class AuthController {
+
+	private final AuthenticationManager authManager;
+	private final JwtEncoder jwtEncoder;
+	private final PasswordEncoder passwordEncoder;
+	private final UserRepository userRepo;
+
+	public AuthController(AuthenticationManager authManager, JwtEncoder jwtEncoder, PasswordEncoder passwordEncoder,
+			UserRepository userRepo) {
+		this.authManager = authManager;
+		this.jwtEncoder = jwtEncoder;
+		this.passwordEncoder = passwordEncoder;
+		this.userRepo = userRepo;
+	}
+
+	@PostMapping("/register")
+	public ResponseEntity<String> register(@Valid @RequestBody User user) {
+
+		Optional<User> existingUser = userRepo.findByEmail(user.getEmail());
+		if (existingUser.isPresent()) {
+			throw new RuntimeException("Email already exists");
+		}
+
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		userRepo.save(user);
+
+		return ResponseEntity.ok("User registered successfully");
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
+		var auth = authManager
+				.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+
+		Instant now = Instant.now();
+		String token = jwtEncoder
+				.encode(JwtEncoderParameters.from(JwtClaimsSet
+						.builder().issuer("shopverse").issuedAt(now).expiresAt(now.plus(6, ChronoUnit.HOURS))
+						.subject(auth.getName()).claim("scope", auth.getAuthorities().stream()
+								.map(GrantedAuthority::getAuthority).collect(Collectors.joining(" ")))
+						.build()))
+				.getTokenValue();
+
+		return ResponseEntity.ok(new AuthResponse(token));
+
+	}
+
+}
+
+record AuthRequest(String email, String password) {
+
+}
+
+record AuthResponse(String token) {
+
+}

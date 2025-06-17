@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shopverse.backend.models.Order;
+import com.shopverse.backend.dto.OrderDTO;
 import com.shopverse.backend.services.OrderService;
 
 @RestController
@@ -24,21 +24,27 @@ public class OrderController {
 	}
 
 	@PostMapping("/place/{userId}")
-	public ResponseEntity<Order> placeOrder(@PathVariable long userId) {
-		Order order = orderService.placeOrder(userId);
-		return ResponseEntity.ok(order);
+	public ResponseEntity<OrderDTO> placeOrder(@PathVariable long userId) {
+		OrderDTO orderDTO = orderService.placeOrder(userId);
+		return ResponseEntity.ok(orderDTO);
 	}
 
 	@GetMapping("users/{userId}")
-	public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) {
-		List<Order> orders = orderService.getOrdersByUser(userId);
-		return ResponseEntity.ok(orders);
+	public ResponseEntity<List<OrderDTO>> getUserOrders(@PathVariable Long userId) {
+		List<OrderDTO> orderDTOs = orderService.getOrdersByUser(userId);
+		return ResponseEntity.ok(orderDTOs);
 	}
 
 	@PutMapping("/cancel/{orderId}")
 	public ResponseEntity<String> cancelOrder(@PathVariable long orderId) {
 		orderService.cancelOrder(orderId);
 		return ResponseEntity.ok("Order cancelled successfully");
+	}
+
+	@PutMapping("/pay/{orderId}")
+	public ResponseEntity<?> payment(@PathVariable long orderId) {
+		orderService.processPayment(orderId);
+		return ResponseEntity.ok("Payment successful");
 	}
 
 }

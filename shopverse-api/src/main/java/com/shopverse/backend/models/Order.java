@@ -41,8 +41,15 @@ public class Order {
 	@Column(nullable = false)
 	private double total;
 
+	@Enumerated(EnumType.STRING)
+	private PaymentStatus paymentStatus = PaymentStatus.PENDING;
+
+	private LocalDateTime paymentTimeStamp;
+
+
 	public Order(Long id, LocalDateTime orderDate, String shippingAddress, Status status, User user,
-			List<OrderItem> orderItems, double total) {
+			List<OrderItem> orderItems, double total, PaymentStatus paymentStatus, LocalDateTime paymentTimeStamp) {
+		super();
 		this.id = id;
 		this.orderDate = orderDate;
 		this.shippingAddress = shippingAddress;
@@ -50,6 +57,8 @@ public class Order {
 		this.user = user;
 		this.orderItems = orderItems;
 		this.total = total;
+		this.paymentStatus = paymentStatus;
+		this.paymentTimeStamp = paymentTimeStamp;
 	}
 
 	public Order() {
@@ -111,11 +120,29 @@ public class Order {
 		this.total = total;
 	}
 
+	public PaymentStatus getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	public void setPaymentStatus(PaymentStatus paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+
+	public LocalDateTime getPaymentTimeStamp() {
+		return paymentTimeStamp;
+	}
+
+	public void setPaymentTimeStamp(LocalDateTime paymentTimeStamp) {
+		this.paymentTimeStamp = paymentTimeStamp;
+	}
+
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", orderDate=" + orderDate + ", shippingAddress=" + shippingAddress + ", status="
-				+ status + ", user=" + user + ", total=" + total + "]";
+				+ status + ", user=" + user + ", orderItems=" + orderItems + ", total=" + total + ", paymentStatus="
+				+ paymentStatus + ", paymentTimeStamp=" + paymentTimeStamp + "]";
 	}
+
 
 
 }

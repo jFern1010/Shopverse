@@ -8,10 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.shopverse.backend.dto.OrderDTO;
+import com.shopverse.backend.dto.OrderItemDTO;
 import com.shopverse.backend.models.Cart;
 import com.shopverse.backend.models.CartItem;
 import com.shopverse.backend.models.Order;
 import com.shopverse.backend.models.OrderItem;
+import com.shopverse.backend.models.PaymentStatus;
 import com.shopverse.backend.models.Product;
 import com.shopverse.backend.models.Status;
 import com.shopverse.backend.repositories.CartItemRepository;
@@ -31,18 +34,19 @@ public class OrderService {
 	private UserRepository userRepo;
 	private CartRepository cartRepo;
 	private ProductRepository productRepo;
-
+	private CartItemRepository cartItemRepo;
 	public OrderService(OrderRepository orderRepo, OrderItemRepository orderItemRepo, UserRepository userRepo,
 			CartRepository cartRepo, CartItemRepository cartItemRepo, ProductRepository productRepo) {
 		this.orderRepo = orderRepo;
 		this.orderItemRepo = orderItemRepo;
 		this.userRepo = userRepo;
 		this.cartRepo = cartRepo;
+		this.cartItemRepo = cartItemRepo;
 		this.productRepo = productRepo;
 	}
 
 	@Transactional
-	public Order placeOrder(Long userId) {
+	public OrderDTO placeOrder(Long userId) {
 		Cart cart = cartRepo.findByUserId(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cart not found"));
 		
 		List <CartItem> cartItems = cart.getItems();
@@ -80,11 +84,41 @@ public class OrderService {
 		cart.getItems().clear();
 		cartRepo.save(cart);
 
-		return order;
+		List<OrderItemDTO> orderItemDTOs = orderItems.stream()
+				.map(orderItem -> new OrderItemDTO(orderItem.getId(), orderItem.getProduct().getTitle(),
+						orderItem.getQuantity(), orderItem.getPrice(), orderItem.getProduct().getImageUrl()))
+				.collect(Collectors.toList());
+
+		OrderDTO orderDTO = new OrderDTO(order.getId(), order.getOrderDate(), order.getStatus(), order.getTotal(),
+				orderItemDTOs);
+		return orderDTO;
+
 	}
 
-	public List<Order> getOrdersByUser(Long userId) {
-		return orderRepo.findByUserId(userId);
+	public List<OrderDTO> getOrdersByUser(Long userId) {
+		
+		List <Order> orders = orderRepo.findByUserId(userId);
+		
+		return orders.stream().map(order -> {
+			List <OrderItemDTO> itemDTOs = order.getOrderItems().stream()
+					.map(item -> new OrderItemDTO(
+							item.getId(),
+							item.getProduct().getTitle(),
+							item.getQuantity(),
+							item.getPrice(),							
+							item.getProduct().getImageUrl()
+					))
+					.collect(Collectors.toList());
+		
+		return new OrderDTO(
+				order.getId(),
+			order.getOrderDate(),
+			order.getStatus(),
+			order.getTotal(),
+			itemDTOs
+			);
+		
+		}).collect(Collectors.toList());		
 	}
 
 	public void cancelOrder(Long orderId) {
@@ -95,6 +129,26 @@ public class OrderService {
 		}
 
 		order.setStatus(Status.CANCELLED);
+		orderRepo.save(order);
+	}
+
+	public void processPayment(long orderId) {
+		Order order = orderRepo.findById(orderId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+		boolean isAllinStock = order.getOrderItems().stream()
+				.allMatch(item -> item.getProduct().getStock() >= item.getQuantity());
+
+		if (!isAllinStock) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for one or more items.");
+		}
+
+		if (order.getPaymentStatus() == PaymentStatus.PAID) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order is paid");
+		}
+
+		order.setPaymentStatus(PaymentStatus.PAID);
+		order.setPaymentTimeStamp(LocalDateTime.now());
 		orderRepo.save(order);
 	}
 }

@@ -12,7 +12,6 @@ public class ProductDTO {
 	public String image;
 
 	public ProductDTO(Product product) {
-		super();
 		this.id = product.getId();
 		this.title = product.getTitle();
 		this.price = product.getPrice();
