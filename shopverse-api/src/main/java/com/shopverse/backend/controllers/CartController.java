@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class CartController {
 		this.cartRepo = cartRepo;
 	}
 	
+	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/{userId}")
 	public ResponseEntity<?> viewCart(@PathVariable long userId) {
 		Cart cart = cartRepo.findByUserId(userId)
@@ -56,6 +58,7 @@ public class CartController {
 
 	}
 
+	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/add/{userId}/{productId}/{quantity}")
 	public ResponseEntity<String> addToCart(@PathVariable long userId, @PathVariable long productId,
 			@PathVariable int quantity)
@@ -65,6 +68,7 @@ public class CartController {
 
 	}
 
+	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/remove/{userId}/{productId}")
 	public ResponseEntity<String> removeCartItem(@PathVariable long userId, @PathVariable long productId) {
 		

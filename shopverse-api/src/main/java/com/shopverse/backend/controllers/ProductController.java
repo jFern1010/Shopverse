@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ public class ProductController {
 		return productRepo.findAll().stream().map(ProductDTO::new).collect(Collectors.toList());
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<Object> createProduct(@RequestBody ProductRequestDTO dto) {
 		Category category = categoryRepo.findById(dto.categoryId)
@@ -66,6 +68,7 @@ public class ProductController {
 
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{productId}")
 	public ResponseEntity<?> updateProduct(@PathVariable long productId, @RequestBody ProductRequestDTO dto)
 			throws Exception {
@@ -84,6 +87,7 @@ public class ProductController {
 		return ResponseEntity.ok(new ProductDTO(productToUpdate));
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<Object> deleteByProduct(@PathVariable long productId) throws Exception {
 		Product product = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found."));

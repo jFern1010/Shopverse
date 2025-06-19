@@ -47,7 +47,8 @@ public class CartService {
 			return cartRepo.save(newCart);
 		});
 
-		Optional<CartItem> cartItem = cart.getItems().stream().filter(x -> x.getId().equals(productId)).findFirst();
+		Optional<CartItem> cartItem = cart.getItems().stream().filter(x -> x.getProduct().getId().equals(productId))
+				.findFirst();
 
 		if (cartItem.isPresent()) {
 			CartItem existingCartItem = cartItem.get();
@@ -91,13 +92,16 @@ public class CartService {
 		Cart cart = cartRepo.findByUser(user)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " Cart not found"));
 
-		CartItem cartItemToRemove = cart.getItems().stream().filter(x -> x.getId().equals(productId)).findFirst()
+		CartItem cartItemToRemove = cart.getItems().stream().filter(x -> x.getProduct().getId().equals(productId))
+				.findFirst()
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
 
 		Product productToRemove = cartItemToRemove.getProduct();
 
 		productToRemove.setStock(product.getStock() + cartItemToRemove.getQuantity());
 		productRepo.save(productToRemove);
+
+		cart.getItems().remove(cartItemToRemove);
 		cartItemRepo.delete(cartItemToRemove);
 	}
 
