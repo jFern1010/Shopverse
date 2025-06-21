@@ -18,10 +18,13 @@ public class ProductSeedService {
 
 	private final ProductRepository productRepo;
 	private final CategoryRepository categoryRepo;
+	private final RestTemplate restTemplate;
 
-	public ProductSeedService(ProductRepository productRepo, CategoryRepository categoryRepo) {
+	public ProductSeedService(ProductRepository productRepo, CategoryRepository categoryRepo,
+			RestTemplate restTemplate) {
 		this.productRepo = productRepo;
 		this.categoryRepo = categoryRepo;
+		this.restTemplate = restTemplate;
 	}
 
 	@PostConstruct
@@ -30,7 +33,6 @@ public class ProductSeedService {
 			return;
 		}
 
-		RestTemplate restTemplate = new RestTemplate();
 		ProductDTO[] productDTOs = restTemplate.getForObject("https://fakestoreapi.com/products", ProductDTO[].class);
 		
 		if (productDTOs != null) {
