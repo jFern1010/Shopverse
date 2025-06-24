@@ -21,8 +21,12 @@ import com.shopverse.backend.models.CartItem;
 import com.shopverse.backend.repositories.CartRepository;
 import com.shopverse.backend.services.CartService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("shopverse/cart")
+@Tag(name = "Cart", description = "Operations related to user's shopping cart")
 public class CartController {
 
 	private final CartService cartService;
@@ -35,6 +39,7 @@ public class CartController {
 	
 	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/{userId}")
+	@Operation(summary = "View cart", description = "Returns the contents and total price of a user's cart")
 	public ResponseEntity<?> viewCart(@PathVariable long userId) {
 		Cart cart = cartRepo.findByUserId(userId)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
@@ -60,6 +65,7 @@ public class CartController {
 
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/add/{userId}/{productId}/{quantity}")
+	@Operation(summary = "Add item to cart", description = "Adds a product to the user's cart and updates stock")
 	public ResponseEntity<String> addToCart(@PathVariable long userId, @PathVariable long productId,
 			@PathVariable int quantity)
 	{
@@ -70,6 +76,7 @@ public class CartController {
 
 	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/remove/{userId}/{productId}")
+	@Operation(summary = "Remove item from cart", description = "Removes a product from the user's cart and restores stock")
 	public ResponseEntity<String> removeCartItem(@PathVariable long userId, @PathVariable long productId) {
 		
 		cartService.removeCartItem(userId, productId);

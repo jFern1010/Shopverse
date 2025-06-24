@@ -42,7 +42,8 @@ public class JwtSecurityConfiguration {
 
 		http.csrf().disable()
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/shopverse/auth/**").permitAll().anyRequest().authenticated())
+						auth -> auth.requestMatchers("/shopverse/auth/**", "/v3/api-docs/**", "/swagger-ui/**",
+								"/swagger-ui.html").permitAll().anyRequest().authenticated())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.oauth2ResourceServer(
 						oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));

@@ -21,10 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.shopverse.backend.models.User;
 import com.shopverse.backend.repositories.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shopverse/auth")
+@Tag(name = "Authentication", description = "Endpoints for user registration and login")
 public class AuthController {
 
 	private final AuthenticationManager authManager;
@@ -41,6 +44,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
+	@Operation(summary = "Register a new user")
 	public ResponseEntity<String> register(@Valid @RequestBody User user) {
 
 		Optional<User> existingUser = userRepo.findByEmail(user.getEmail());
@@ -55,6 +59,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
+	@Operation(summary = "Login and receive a JWT token")
 	public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
 		var auth = authManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));

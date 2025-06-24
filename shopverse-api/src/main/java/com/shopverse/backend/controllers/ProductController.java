@@ -23,8 +23,12 @@ import com.shopverse.backend.models.Product;
 import com.shopverse.backend.repositories.CategoryRepository;
 import com.shopverse.backend.repositories.ProductRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/shopverse/products")
+@Tag(name = "Products", description = "Endpoints for managing and retrieving product information")
 public class ProductController {
 
 	private final ProductRepository productRepo;
@@ -37,12 +41,14 @@ public class ProductController {
 	}
 
 	@GetMapping
+	@Operation(summary = "Get all products", description = "Returns a list of all products")
 	public List<ProductDTO> allProducts() {
 		return productRepo.findAll().stream().map(ProductDTO::new).collect(Collectors.toList());
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
+	@Operation(summary = "Create product", description = "Adds a new product to the catalog")
 	public ResponseEntity<Object> createProduct(@RequestBody ProductRequestDTO dto) {
 		Category category = categoryRepo.findById(dto.categoryId)
 				.orElseThrow();
@@ -62,6 +68,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/{productId}")
+	@Operation(summary = "Get product by ID", description = "Returns details of a prodcut by its ID")
 	public ResponseEntity<ProductDTO> getProduct(@PathVariable long productId) throws Exception {
 		Product product = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found"));
 		return ResponseEntity.ok(new ProductDTO(product));
@@ -70,6 +77,7 @@ public class ProductController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{productId}")
+	@Operation(summary = "Update product", description = "Updates product details by ID")
 	public ResponseEntity<?> updateProduct(@PathVariable long productId, @RequestBody ProductRequestDTO dto)
 			throws Exception {
 		Product productToUpdate = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found"));
@@ -89,6 +97,7 @@ public class ProductController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{productId}")
+	@Operation(summary = "Delete product", description = "Deletes a prodcut by ID")
 	public ResponseEntity<Object> deleteByProduct(@PathVariable long productId) throws Exception {
 		Product product = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found."));
 
@@ -98,6 +107,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/category/{category}")
+	@Operation(summary = "Get products by category", description = "Returns products that belong to the specified category")
 	public List<ProductDTO> allProductsByCategory(@PathVariable String category) {
 		return productRepo.findAll().stream().filter(product -> product.getCategory().getName().equals(category))
 				.map(ProductDTO::new)
