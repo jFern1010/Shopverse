@@ -45,7 +45,7 @@ Frontend (Ongoing Development):
 📦 Installation & Setup
 
 1️⃣ Clone Repository
-git clone https://github.com/your-username/shopverse-backend.git
+git clone https://github.com/jFern1010/shopverse-backend.git
 cd shopverse-backend
 
 
