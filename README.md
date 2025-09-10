@@ -4,6 +4,11 @@ ShopVerse is a modern e-commerce backend API built with Java Spring Boot, featur
 This repository contains the fully functional backend for the ShopVerse application.
 A React.js frontend is currently in development to provide a clean, minimalist, and modern user interface.
 
+<p align="center">
+  <img width="800" alt="ShopVerse Screenshot" src="https://github.com/user-attachments/assets/92b83045-0ebb-4573-80e5-fd5ceaf1cd0e" />
+</p>
+
+
 ⸻
 
 🚀 Features
