@@ -1,19 +1,7 @@
 package com.shopverse.backend.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
+public class CheckoutRequestDTO {
 
-import com.shopverse.backend.models.PaymentStatus;
-import com.shopverse.backend.models.Status;
-
-public class OrderDTO {
-
-	private Long id;
-	private LocalDateTime orderDate;
-	private Status status;
-	private double total;
-	private List<OrderItemDTO> items;
-	
 	private String shippingName;
 	private String shippingStreet;
 	private String shippingCity;
@@ -27,18 +15,10 @@ public class OrderDTO {
 	private String billingCountry;
 
 	private String paymentMethod;
-	private PaymentStatus paymentStatus;
-	private LocalDateTime paymentTimeStamp;
 
-	public OrderDTO(Long id, LocalDateTime orderDate, Status status, double total, List<OrderItemDTO> items,
-			String shippingName, String shippingStreet, String shippingCity, String shippingZip, String shippingCountry,
-			String billingName, String billingStreet, String billingCity, String billingZip, String billingCountry,
-			String paymentMethod, PaymentStatus paymentStatus, LocalDateTime paymentTimeStamp) {
-		this.id = id;
-		this.orderDate = orderDate;
-		this.status = status;
-		this.total = total;
-		this.items = items;
+	public CheckoutRequestDTO(String shippingName, String shippingStreet, String shippingCity, String shippingZip,
+			String shippingCountry, String billingName, String billingStreet, String billingCity, String billingZip,
+			String billingCountry, String paymentMethod) {
 		this.shippingName = shippingName;
 		this.shippingStreet = shippingStreet;
 		this.shippingCity = shippingCity;
@@ -50,43 +30,10 @@ public class OrderDTO {
 		this.billingZip = billingZip;
 		this.billingCountry = billingCountry;
 		this.paymentMethod = paymentMethod;
-		this.paymentStatus = paymentStatus;
-		this.paymentTimeStamp = paymentTimeStamp;
 	}
 
-	public OrderDTO() {
+	public CheckoutRequestDTO() {
 
-	}
-
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public LocalDateTime getOrderDate() {
-		return orderDate;
-	}
-	public void setOrderDate(LocalDateTime orderDate) {
-		this.orderDate = orderDate;
-	}
-	public Status getStatus() {
-		return status;
-	}
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-	public double getTotal() {
-		return total;
-	}
-	public void setTotal(double total) {
-		this.total = total;
-	}
-	public List<OrderItemDTO> getItems() {
-		return items;
-	}
-	public void setItems(List<OrderItemDTO> items) {
-		this.items = items;
 	}
 
 	public String getShippingName() {
@@ -177,23 +124,14 @@ public class OrderDTO {
 		this.paymentMethod = paymentMethod;
 	}
 
-	public PaymentStatus getPaymentStatus() {
-		return paymentStatus;
+	@Override
+	public String toString() {
+		return "CheckoutRequestDTO [shippingName=" + shippingName + ", shippingStreet=" + shippingStreet
+				+ ", shippingCity=" + shippingCity + ", shippingZip=" + shippingZip + ", shippingCountry="
+				+ shippingCountry + ", billingName=" + billingName + ", billingStreet=" + billingStreet
+				+ ", billingCity=" + billingCity + ", billingZip=" + billingZip + ", billingCountry=" + billingCountry
+				+ ", paymentMethod=" + paymentMethod + "]";
 	}
 
-	public void setPaymentStatus(PaymentStatus paymentStatus) {
-		this.paymentStatus = paymentStatus;
-	}
-
-	public LocalDateTime getPaymentTimeStamp() {
-		return paymentTimeStamp;
-	}
-
-	public void setPaymentTimeStamp(LocalDateTime paymentTimeStamp) {
-		this.paymentTimeStamp = paymentTimeStamp;
-	}
-
-	
-	
 
 }

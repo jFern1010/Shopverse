@@ -1,5 +1,7 @@
 package com.shopverse.backend.dto;
 
+import com.shopverse.backend.models.OrderItem;
+
 public class OrderItemDTO {
 
 	private Long id;
@@ -17,6 +19,11 @@ public class OrderItemDTO {
 	}
 
 	public OrderItemDTO() {
+	}
+
+	public static OrderItemDTO fromEntity(OrderItem item) {
+		return new OrderItemDTO(item.getId(), item.getProduct().getTitle(), item.getQuantity(), item.getPrice(),
+				item.getProduct().getImageUrl());
 	}
 
 	public Long getId() {

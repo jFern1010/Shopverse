@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.shopverse.backend.dto.CheckoutRequestDTO;
 import com.shopverse.backend.dto.OrderDTO;
 import com.shopverse.backend.services.OrderService;
 
@@ -31,17 +33,26 @@ public class OrderController {
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/place/{userId}")
 	@Operation(summary = "Place an order", description = "Converts the user's cart into an order")
-	public ResponseEntity<OrderDTO> placeOrder(@PathVariable long userId) {
-		OrderDTO orderDTO = orderService.placeOrder(userId);
+	public ResponseEntity<OrderDTO> placeOrder(@PathVariable long userId,
+			@RequestBody CheckoutRequestDTO checkoutRequest) {
+		OrderDTO orderDTO = orderService.placeOrder(userId, checkoutRequest);
 		return ResponseEntity.ok(orderDTO);
 	}
 
 	@PreAuthorize("hasRole('USER')")
-	@GetMapping("users/{userId}")
+	@GetMapping("/users/{userId}")
 	@Operation(summary = "Get user orders", description = "Returns a list of orders placed by the user")
 	public ResponseEntity<List<OrderDTO>> getUserOrders(@PathVariable Long userId) {
 		List<OrderDTO> orderDTOs = orderService.getOrdersByUser(userId);
 		return ResponseEntity.ok(orderDTOs);
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/{orderId}")
+	@Operation(summary = "Get order by ID", description = "Returns the deatils of a specific order")
+	public ResponseEntity<OrderDTO> getOrderById(@PathVariable long orderId) {
+		OrderDTO orderDTO = orderService.getOrderById(orderId);
+		return ResponseEntity.ok(orderDTO);
 	}
 
 	@PreAuthorize("hasRole('USER')")
@@ -55,7 +66,7 @@ public class OrderController {
 	@PreAuthorize("hasRole('USER')")
 	@PutMapping("/pay/{orderId}")
 	@Operation(summary = "Pay for order", description = "Process payment for a given order ID")
-	public ResponseEntity<?> payment(@PathVariable long orderId) {
+	public ResponseEntity<String> payment(@PathVariable long orderId) {
 		orderService.processPayment(orderId);
 		return ResponseEntity.ok("Payment successful");
 	}

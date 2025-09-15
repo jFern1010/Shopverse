@@ -18,7 +18,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.shopverse.backend.dto.CartItemDTO;
 import com.shopverse.backend.models.Cart;
 import com.shopverse.backend.models.CartItem;
+import com.shopverse.backend.models.User;
 import com.shopverse.backend.repositories.CartRepository;
+import com.shopverse.backend.repositories.UserRepository;
 import com.shopverse.backend.services.CartService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,10 +33,12 @@ public class CartController {
 
 	private final CartService cartService;
 	private final CartRepository cartRepo;
+	private final UserRepository userRepo;
 
-	public CartController(CartService cartService, CartRepository cartRepo) {
+	public CartController(CartService cartService, CartRepository cartRepo, UserRepository userRepo) {
 		this.cartService = cartService;
 		this.cartRepo = cartRepo;
+		this.userRepo = userRepo;
 	}
 	
 	@PreAuthorize("hasRole('USER')")
@@ -42,16 +46,26 @@ public class CartController {
 	@Operation(summary = "View cart", description = "Returns the contents and total price of a user's cart")
 	public ResponseEntity<?> viewCart(@PathVariable long userId) {
 		Cart cart = cartRepo.findByUserId(userId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+				.orElseGet(() -> {
+
+					User user = userRepo.findById(userId)
+							.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+					Cart newCart = new Cart();
+					newCart.setUser(user);
+					return cartRepo.save(newCart);
+				});
 
 		List<CartItem> cartItems = cart.getItems();
 
 		if (cartItems.isEmpty()) {
-			return ResponseEntity.ok("Cart is empty");
+			Map<String, Object> response = new HashMap<>();
+			response.put("items", List.of());
+			response.put("totalPrice", 0.0);
+			return ResponseEntity.ok(response);
 		}
 		
 		List<CartItemDTO> itemDTOs = cartItems.stream().map(item -> new CartItemDTO(item.getId(), item.getQuantity(),
-				item.getProduct().getTitle(), item.getProduct().getPrice())).toList();
+				item.getProduct().getTitle(), item.getProduct().getPrice(), item.getProduct().getId())).toList();
 
 		double totalPrice = cartItems.stream().mapToDouble(x -> x.getProduct().getPrice() * x.getQuantity()).sum();
 

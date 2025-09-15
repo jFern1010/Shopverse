@@ -40,9 +40,11 @@ public class JwtSecurityConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http.csrf().disable()
+		http.csrf().disable().cors().and()
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/shopverse/auth/**", "/v3/api-docs/**", "/swagger-ui/**",
+						auth -> auth.requestMatchers("/shopverse/auth/**", "/shopverse/products",
+								"/shopverse/products/{productId}", "/v3/api-docs/**",
+								"/swagger-ui/**",
 								"/swagger-ui.html").permitAll().anyRequest().authenticated())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.oauth2ResourceServer(

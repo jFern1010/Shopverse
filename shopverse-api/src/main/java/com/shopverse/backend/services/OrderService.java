@@ -8,8 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.shopverse.backend.dto.CheckoutRequestDTO;
 import com.shopverse.backend.dto.OrderDTO;
-import com.shopverse.backend.dto.OrderItemDTO;
+import com.shopverse.backend.mapper.OrderMapper;
 import com.shopverse.backend.models.Cart;
 import com.shopverse.backend.models.CartItem;
 import com.shopverse.backend.models.Order;
@@ -47,7 +48,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public OrderDTO placeOrder(Long userId) {
+	public OrderDTO placeOrder(Long userId, CheckoutRequestDTO checkoutRequest) {
 		Cart cart = cartRepo.findByUserId(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cart not found"));
 		
 		List <CartItem> cartItems = cart.getItems();
@@ -60,6 +61,20 @@ public class OrderService {
 		order.setStatus(Status.PENDING);
 		order.setOrderDate(LocalDateTime.now());
 		
+		order.setShippingName(checkoutRequest.getShippingName());
+		order.setShippingStreet(checkoutRequest.getShippingStreet());
+		order.setShippingCity(checkoutRequest.getShippingCity());
+		order.setShippingZip(checkoutRequest.getShippingZip());
+		order.setShippingCountry(checkoutRequest.getShippingCountry());
+
+		order.setBillingName(checkoutRequest.getBillingName());
+		order.setBillingStreet(checkoutRequest.getBillingStreet());
+		order.setBillingCity(checkoutRequest.getBillingCity());
+		order.setBillingZip(checkoutRequest.getBillingZip());
+		order.setBillingCountry(checkoutRequest.getBillingCountry());
+
+		order.setPaymentMethod(checkoutRequest.getPaymentMethod());
+
 		List <OrderItem> orderItems = cartItems.stream()
 				.map(cartItem -> {
 						Product product = cartItem.getProduct();
@@ -85,14 +100,7 @@ public class OrderService {
 		cart.getItems().clear();
 		cartRepo.save(cart);
 
-		List<OrderItemDTO> orderItemDTOs = orderItems.stream()
-				.map(orderItem -> new OrderItemDTO(orderItem.getId(), orderItem.getProduct().getTitle(),
-						orderItem.getQuantity(), orderItem.getPrice(), orderItem.getProduct().getImageUrl()))
-				.collect(Collectors.toList());
-
-		OrderDTO orderDTO = new OrderDTO(order.getId(), order.getOrderDate(), order.getStatus(), order.getTotal(),
-				orderItemDTOs);
-		return orderDTO;
+		return OrderMapper.toDTO(order);
 
 	}
 
@@ -100,26 +108,8 @@ public class OrderService {
 		
 		List <Order> orders = orderRepo.findByUserId(userId);
 		
-		return orders.stream().map(order -> {
-			List <OrderItemDTO> itemDTOs = order.getOrderItems().stream()
-					.map(item -> new OrderItemDTO(
-							item.getId(),
-							item.getProduct().getTitle(),
-							item.getQuantity(),
-							item.getPrice(),							
-							item.getProduct().getImageUrl()
-					))
-					.collect(Collectors.toList());
-		
-		return new OrderDTO(
-				order.getId(),
-			order.getOrderDate(),
-			order.getStatus(),
-			order.getTotal(),
-			itemDTOs
-			);
-		
-		}).collect(Collectors.toList());		
+		return orders.stream().map(OrderMapper::toDTO)
+				.collect(Collectors.toList());
 	}
 
 	public void cancelOrder(Long orderId) {
@@ -152,4 +142,11 @@ public class OrderService {
 		order.setPaymentTimeStamp(LocalDateTime.now());
 		orderRepo.save(order);
 	}
+
+	public OrderDTO getOrderById(long orderId) {
+		return orderRepo.findById(orderId).map(OrderMapper::toDTO)
+				.orElseThrow(
+						() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found with id " + orderId));
+	}
+
 }

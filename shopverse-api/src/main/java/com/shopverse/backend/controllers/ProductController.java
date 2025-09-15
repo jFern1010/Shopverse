@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -97,7 +98,7 @@ public class ProductController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{productId}")
-	@Operation(summary = "Delete product", description = "Deletes a prodcut by ID")
+	@Operation(summary = "Delete product", description = "Deletes a product by ID")
 	public ResponseEntity<Object> deleteByProduct(@PathVariable long productId) throws Exception {
 		Product product = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found."));
 
@@ -112,6 +113,12 @@ public class ProductController {
 		return productRepo.findAll().stream().filter(product -> product.getCategory().getName().equals(category))
 				.map(ProductDTO::new)
 				.collect(Collectors.toList());
+	}
+
+	@GetMapping("/search")
+	@Operation(summary = "Search products", description = "Search product by title or description")
+	public List<ProductDTO> searchProducts(@RequestParam("q") String query) {
+		return productRepo.searchByTitleDescription(query).stream().map(ProductDTO::new).collect(Collectors.toList());
 	}
 
 }
