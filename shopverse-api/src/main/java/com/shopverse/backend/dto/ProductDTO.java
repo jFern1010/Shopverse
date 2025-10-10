@@ -9,7 +9,8 @@ public class ProductDTO {
 	public double price;
 	public String description;
 	public String category;
-	public String image;
+	public String imageUrl;
+	public int stock;
 
 	public ProductDTO(Product product) {
 		this.id = product.getId();
@@ -17,7 +18,8 @@ public class ProductDTO {
 		this.price = product.getPrice();
 		this.description = product.getDescription();
 		this.category = product.getCategory().getName();
-		this.image = product.getImageUrl();
+		this.imageUrl = product.getImageUrl();
+		this.stock = product.getStock();
 	}
 
 	public ProductDTO() {
@@ -64,17 +66,25 @@ public class ProductDTO {
 	}
 
 	public String getImage() {
-		return image;
+		return imageUrl;
 	}
 
 	public void setImage(String image) {
-		this.image = image;
+		this.imageUrl = image;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
 	}
 
 	@Override
 	public String toString() {
 		return "ProductDTO [id=" + id + ", title=" + title + ", price=" + price + ", description=" + description
-				+ ", category=" + category + ", image=" + image + "]";
+				+ ", category=" + category + ", image=" + imageUrl + ", stock=" + stock + "]";
 	}
 
 }

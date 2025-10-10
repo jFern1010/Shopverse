@@ -47,8 +47,8 @@ public class ProductSeedService {
 				product.setTitle(dto.title);
 				product.setDescription(dto.description);
                 product.setPrice(dto.price);
-                product.setStock(10);
-                product.setImageUrl(dto.image);
+				product.setStock(dto.getStock() > 0 ? dto.getStock() : 10);
+				product.setImageUrl(dto.imageUrl);
                 product.setCategory(category);
                 
                 productRepo.save(product);

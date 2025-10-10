@@ -5,6 +5,7 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,9 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.shopverse.backend.models.Role;
+import com.shopverse.backend.models.User;
+import com.shopverse.backend.repositories.UserRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -43,9 +47,10 @@ public class JwtSecurityConfiguration {
 		http.csrf().disable().cors().and()
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers("/shopverse/auth/**", "/shopverse/products",
-								"/shopverse/products/{productId}", "/v3/api-docs/**",
+								"/shopverse/products/{productId}", "/shopverse/products/search", "/v3/api-docs/**",
 								"/swagger-ui/**",
-								"/swagger-ui.html").permitAll().anyRequest().authenticated())
+								"/swagger-ui.html").permitAll().requestMatchers("/shopverse/admin/**").hasRole("ADMIN")
+								.anyRequest().authenticated())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.oauth2ResourceServer(
 						oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
@@ -69,7 +74,7 @@ public class JwtSecurityConfiguration {
 	@Bean
 	public JwtAuthenticationConverter jwtAuthenticationConverter() {
 		var jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-		jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+		jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
 		jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("scope");
 
 		var jwtConverter = new JwtAuthenticationConverter();
@@ -116,5 +121,20 @@ public class JwtSecurityConfiguration {
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
+	}
+
+	@Bean
+	CommandLineRunner initAdmin(UserRepository repo, PasswordEncoder encoder) {
+		return args -> {
+			if (repo.findByEmail("admin@shopverse.com").isEmpty()) {
+				User admin = new User();
+				admin.setUserName("adminjuan");
+				admin.setEmail("admin@shopverse.com");
+				admin.setPassword(encoder.encode("admin123"));
+				admin.getRoles().add(Role.ADMIN);
+				admin.getRoles().add(Role.USER);
+				repo.save(admin);
+			}
+		};
 	}
 }

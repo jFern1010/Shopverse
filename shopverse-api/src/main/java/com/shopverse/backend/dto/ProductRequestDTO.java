@@ -6,14 +6,17 @@ public class ProductRequestDTO {
 	public String description;
 	public double price;
 	public String imageUrl;
+	public int stock;
 	public Long categoryId;
 
-	public ProductRequestDTO(String title, String description, double price, String imageUrl, Long categoryId) {
+	public ProductRequestDTO(String title, String description, double price, String imageUrl, int stock,
+			Long categoryId) {
 
 		this.title = title;
 		this.description = description;
 		this.price = price;
 		this.imageUrl = imageUrl;
+		this.stock = stock;
 		this.categoryId = categoryId;
 	}
 
@@ -49,6 +52,14 @@ public class ProductRequestDTO {
 		this.imageUrl = imageUrl;
 	}
 
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
 	public Long getCategoryId() {
 		return categoryId;
 	}
@@ -60,7 +71,7 @@ public class ProductRequestDTO {
 	@Override
 	public String toString() {
 		return "ProductRequestDTO [title=" + title + ", description=" + description + ", price=" + price + ", imageUrl="
-				+ imageUrl + ", categoryId=" + categoryId + "]";
+				+ imageUrl + ", stock=" + stock + ", categoryId=" + categoryId + "]";
 	}
 
 }

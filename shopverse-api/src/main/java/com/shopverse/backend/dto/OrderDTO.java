@@ -9,6 +9,7 @@ import com.shopverse.backend.models.Status;
 public class OrderDTO {
 
 	private Long id;
+	private UserDTO user;
 	private LocalDateTime orderDate;
 	private Status status;
 	private double total;
@@ -30,11 +31,13 @@ public class OrderDTO {
 	private PaymentStatus paymentStatus;
 	private LocalDateTime paymentTimeStamp;
 
-	public OrderDTO(Long id, LocalDateTime orderDate, Status status, double total, List<OrderItemDTO> items,
+	public OrderDTO(Long id, UserDTO user, LocalDateTime orderDate, Status status, double total,
+			List<OrderItemDTO> items,
 			String shippingName, String shippingStreet, String shippingCity, String shippingZip, String shippingCountry,
 			String billingName, String billingStreet, String billingCity, String billingZip, String billingCountry,
 			String paymentMethod, PaymentStatus paymentStatus, LocalDateTime paymentTimeStamp) {
 		this.id = id;
+		this.user = user;
 		this.orderDate = orderDate;
 		this.status = status;
 		this.total = total;
@@ -61,6 +64,15 @@ public class OrderDTO {
 	public Long getId() {
 		return id;
 	}
+
+	public UserDTO getUser() {
+		return user;
+	}
+
+	public void setUser(UserDTO user) {
+		this.user = user;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}

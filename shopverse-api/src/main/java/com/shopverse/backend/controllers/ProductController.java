@@ -51,15 +51,17 @@ public class ProductController {
 	@PostMapping
 	@Operation(summary = "Create product", description = "Adds a new product to the catalog")
 	public ResponseEntity<Object> createProduct(@RequestBody ProductRequestDTO dto) {
-		Category category = categoryRepo.findById(dto.categoryId)
-				.orElseThrow();
+		Category category = categoryRepo.findById(dto.getCategoryId())
+				.orElseThrow(() -> new RuntimeException("Category not found"));
 
 		Product product = new Product();
-		product.setTitle(dto.title);
-		product.setDescription(dto.description);
-		product.setPrice(dto.price);
-		product.setImageUrl(dto.imageUrl);
+		product.setTitle(dto.getTitle());
+		product.setDescription(dto.getDescription());
+		product.setPrice(dto.getPrice());
+		product.setImageUrl(dto.getImageUrl());
+		product.setStock(dto.getStock());
 		product.setCategory(category);
+
 		Product newProduct = productRepo.save(product);
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newProduct.getId())
@@ -89,7 +91,8 @@ public class ProductController {
 		productToUpdate.setTitle(dto.getTitle());
 		productToUpdate.setDescription(dto.getDescription());
 		productToUpdate.setPrice(dto.getPrice());
-		productToUpdate.setStock(10);
+		productToUpdate.setStock(dto.getStock());
+		productToUpdate.setImageUrl(dto.getImageUrl());
 		productToUpdate.setCategory(category);
 		productRepo.save(productToUpdate);
 

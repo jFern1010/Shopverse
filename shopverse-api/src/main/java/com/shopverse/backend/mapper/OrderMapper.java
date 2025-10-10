@@ -12,6 +12,7 @@ public class OrderMapper {
 		dto.setOrderDate(order.getOrderDate());
 		dto.setStatus(order.getStatus());
 		dto.setTotal(order.getTotal());
+		dto.setUser(UserMapper.toDTO(order.getUser()));
 
 		dto.setShippingName(order.getShippingName());
 		dto.setShippingStreet(order.getShippingStreet());

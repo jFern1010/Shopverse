@@ -3,6 +3,8 @@ package com.shopverse.backend.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -17,14 +19,15 @@ public class Category {
 
 	private String name;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "category")
 	private List<Product> products = new ArrayList<>();
 
-	// public Category(Long id, String name, List<Product> products) {
-	// this.id = id;
-	// this.name = name;
-	// this.products = products;
-	// }
+	public Category(Long id, String name, List<Product> products) {
+		this.id = id;
+		this.name = name;
+		this.products = products;
+	}
 
 	public Category(String name) {
 		this.name = name;

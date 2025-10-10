@@ -2,8 +2,8 @@ package com.shopverse.backend.auth;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -67,18 +67,23 @@ public class AuthController {
 				.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
 		Instant now = Instant.now();
-		long expiry = 3600L;
+
+		List<String> roles = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+				.map(a -> a.replace("ROLE_", ""))
+				.toList();
+
 		String token = jwtEncoder
 				.encode(JwtEncoderParameters.from(JwtClaimsSet
 						.builder().issuer("shopverse").issuedAt(now).expiresAt(now.plus(6, ChronoUnit.HOURS))
-						.subject(auth.getName()).claim("scope", auth.getAuthorities().stream()
-								.map(GrantedAuthority::getAuthority).collect(Collectors.joining(" ")))
+						.subject(auth.getName()).claim("scope", String.join(" ", roles))
 						.build()))
 				.getTokenValue();
 
 		User user = userRepo.findByEmail(request.email()).orElseThrow(() -> new RuntimeException("User not found"));
 
-		return ResponseEntity.ok(new AuthResponse(token, user.getId(), user.getEmail()));
+		List<String> roleNames = user.getRoles().stream().map(Enum::name).toList();
+
+		return ResponseEntity.ok(new AuthResponse(token, user.getId(), user.getEmail(), roleNames));
 
 	}
 
@@ -88,6 +93,6 @@ record AuthRequest(String email, String password) {
 
 }
 
-record AuthResponse(String token, Long id, String email) {
+record AuthResponse(String token, Long id, String email, List<String> roles) {
 
 }

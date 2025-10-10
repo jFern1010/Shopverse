@@ -141,6 +141,7 @@ public class OrderService {
 		order.setPaymentStatus(PaymentStatus.PAID);
 		order.setPaymentTimeStamp(LocalDateTime.now());
 		orderRepo.save(order);
+
 	}
 
 	public OrderDTO getOrderById(long orderId) {
@@ -149,4 +150,21 @@ public class OrderService {
 						() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found with id " + orderId));
 	}
 
+	public List<OrderDTO> getAllOrders() {
+		return orderRepo.findAll().stream().map(OrderMapper::toDTO).collect(Collectors.toList());
+	}
+
+	public void markAsShipped(long orderId) {
+		Order order = orderRepo.findById(orderId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+		order.setStatus(Status.SHIPPED);
+		orderRepo.save(order);
+	}
+
+	public void markAsDelivered(long orderId) {
+		Order order = orderRepo.findById(orderId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+		order.setStatus(Status.DELIVERED);
+		orderRepo.save(order);
+	}
 }
