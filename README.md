@@ -51,6 +51,7 @@ Frontend (Ongoing Development):
 
 1️⃣ Clone Repository
 git clone https://github.com/jFern1010/Shopverse.git
+
 cd shopverse-backend
 
 
