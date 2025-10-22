@@ -12,23 +12,24 @@ A React.js frontend is currently in development to provide a clean, minimalist, 
 ⸻
 
 🚀 Features
-	•	User Authentication & Authorization
+	User Authentication & Authorization
 	•	JWT-based authentication
 	•	Role-based access (USER, ADMIN)
 	•	Password hashing for security
-	•	Product Management
+	Product Management
 	•	Add, update, delete, and view products
 	•	Category association
-	•	Cart & Order System
+	Cart & Order System
 	•	Add/remove items from cart
 	•	Place and cancel orders
 	•	Payment simulation endpoint
+	Security & Documentation
 	•	Spring Security Integration
 	•	Method-level authorization using @PreAuthorize
 	•	Swagger API Documentation
 	•	Easy API testing through Swagger UI
-	•	Dockerized Backend
-	•	Ready for containerized deployment
+	Deployment
+	•	Dockerized backend and ready for containerized deployment
 
 ⸻
 
@@ -59,14 +60,25 @@ cd shopverse-backend
 
 Update application.properties:
 spring.datasource.url=jdbc:mysql://localhost:3306/shopverse
-spring.datasource.username=
-spring.datasource.password=
+spring.datasource.username=<your-db-username>
+spring.datasource.password=<your-db-password>
 
-3️⃣ Run Application
+3️⃣ Run Backend Application
 mvn spring-boot:run
 
 Backend will be available at:
 http://localhost:5000
+
+4️⃣ Run Frontend (Development)
+Open a new terminal and navigate to the frontend folder:
+
+cd Shopverse/frontend
+npm install
+npm start
+
+The React frontend will run on http://localhost:5173
+It communicates with the backend at http://localhost:5000
+⚠️ The frontend is not fully complete but functional enough to interact with backend APIs.
 
 
 Docker Setup
@@ -91,9 +103,9 @@ http://localhost:5000/swagger-ui/index.html
 
 ⸻
 
-📌 LinkedIn Portfolio Note
+📌 Notes
 
 This backend project is production-ready and currently being integrated with a React frontend.
 Follow the repository for updates on the complete full-stack release.
-
+Database credentials are intentionally placeholders for security. Users should configure their own local database.
 
