@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.shopverse.backend.dto.ProductDTO;
@@ -52,7 +54,7 @@ public class ProductController {
 	@Operation(summary = "Create product", description = "Adds a new product to the catalog")
 	public ResponseEntity<Object> createProduct(@RequestBody ProductRequestDTO dto) {
 		Category category = categoryRepo.findById(dto.getCategoryId())
-				.orElseThrow(() -> new RuntimeException("Category not found"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
 		Product product = new Product();
 		product.setTitle(dto.getTitle());
@@ -73,7 +75,8 @@ public class ProductController {
 	@GetMapping("/{productId}")
 	@Operation(summary = "Get product by ID", description = "Returns details of a prodcut by its ID")
 	public ResponseEntity<ProductDTO> getProduct(@PathVariable long productId) throws Exception {
-		Product product = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found"));
+		Product product = productRepo.findById(productId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 		return ResponseEntity.ok(new ProductDTO(product));
 
 	}
@@ -83,10 +86,11 @@ public class ProductController {
 	@Operation(summary = "Update product", description = "Updates product details by ID")
 	public ResponseEntity<?> updateProduct(@PathVariable long productId, @RequestBody ProductRequestDTO dto)
 			throws Exception {
-		Product productToUpdate = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found"));
+		Product productToUpdate = productRepo.findById(productId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
 		Category category = categoryRepo.findById(dto.getCategoryId())
-				.orElseThrow(() -> new Exception("Category not found"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
 		productToUpdate.setTitle(dto.getTitle());
 		productToUpdate.setDescription(dto.getDescription());
@@ -103,7 +107,8 @@ public class ProductController {
 	@DeleteMapping("/{productId}")
 	@Operation(summary = "Delete product", description = "Deletes a product by ID")
 	public ResponseEntity<Object> deleteByProduct(@PathVariable long productId) throws Exception {
-		Product product = productRepo.findById(productId).orElseThrow(() -> new Exception("Product not found."));
+		Product product = productRepo.findById(productId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
 		productRepo.delete(product);
 		return ResponseEntity.noContent().build();
