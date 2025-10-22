@@ -73,7 +73,9 @@ http://localhost:5000
 Open a new terminal and navigate to the frontend folder:
 
 cd Shopverse/frontend
+
 npm install
+
 npm start
 
 The React frontend will run on http://localhost:5173
