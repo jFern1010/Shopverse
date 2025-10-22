@@ -59,9 +59,13 @@ cd shopverse-backend
 2️⃣ Configure Database
 
 Update application.properties:
+
 spring.datasource.url=jdbc:mysql://localhost:3306/shopverse
+
 spring.datasource.username=<your-db-username>
+
 spring.datasource.password=<your-db-password>
+
 
 3️⃣ Run Backend Application
 mvn spring-boot:run
