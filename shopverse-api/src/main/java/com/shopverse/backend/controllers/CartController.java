@@ -40,20 +40,19 @@ public class CartController {
 		this.cartRepo = cartRepo;
 		this.userRepo = userRepo;
 	}
-	
+
 	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/{userId}")
 	@Operation(summary = "View cart", description = "Returns the contents and total price of a user's cart")
 	public ResponseEntity<?> viewCart(@PathVariable long userId) {
-		Cart cart = cartRepo.findByUserId(userId)
-				.orElseGet(() -> {
+		Cart cart = cartRepo.findByUserId(userId).orElseGet(() -> {
 
-					User user = userRepo.findById(userId)
-							.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-					Cart newCart = new Cart();
-					newCart.setUser(user);
-					return cartRepo.save(newCart);
-				});
+			User user = userRepo.findById(userId)
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+			Cart newCart = new Cart();
+			newCart.setUser(user);
+			return cartRepo.save(newCart);
+		});
 
 		List<CartItem> cartItems = cart.getItems();
 
@@ -63,7 +62,7 @@ public class CartController {
 			response.put("totalPrice", 0.0);
 			return ResponseEntity.ok(response);
 		}
-		
+
 		List<CartItemDTO> itemDTOs = cartItems.stream().map(item -> new CartItemDTO(item.getId(), item.getQuantity(),
 				item.getProduct().getTitle(), item.getProduct().getPrice(), item.getProduct().getId())).toList();
 
@@ -81,8 +80,7 @@ public class CartController {
 	@PostMapping("/add/{userId}/{productId}/{quantity}")
 	@Operation(summary = "Add item to cart", description = "Adds a product to the user's cart and updates stock")
 	public ResponseEntity<String> addToCart(@PathVariable long userId, @PathVariable long productId,
-			@PathVariable int quantity)
-	{
+			@PathVariable int quantity) {
 		cartService.addToCart(userId, productId, quantity);
 		return ResponseEntity.ok("Item added to cart and stock updated");
 
@@ -92,7 +90,7 @@ public class CartController {
 	@DeleteMapping("/remove/{userId}/{productId}")
 	@Operation(summary = "Remove item from cart", description = "Removes a product from the user's cart and restores stock")
 	public ResponseEntity<String> removeCartItem(@PathVariable long userId, @PathVariable long productId) {
-		
+
 		cartService.removeCartItem(userId, productId);
 
 		return ResponseEntity.ok("Item removed from cart and stock restored.");
