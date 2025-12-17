@@ -1,4 +1,4 @@
-🛒 ShopVerse – E-commerce Backend (Spring Boot)
+ShopVerse – E-commerce Backend (Spring Boot)
 
 ShopVerse is a modern e-commerce backend API built with Java Spring Boot, featuring secure authentication, role-based access control, and robust order & product management.
 This repository contains the fully functional backend for the ShopVerse application.
