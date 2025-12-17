@@ -11,7 +11,7 @@ A React.js frontend is currently in development to provide a clean, minimalist, 
 
 ⸻
 
-🚀 Features
+Features
 	User Authentication & Authorization
 	•	JWT-based authentication
 	•	Role-based access (USER, ADMIN)
@@ -33,7 +33,7 @@ A React.js frontend is currently in development to provide a clean, minimalist, 
 
 ⸻
 
-🛠️ Tech Stack
+Tech Stack
 
 Backend:
 	•	Java 21
@@ -48,15 +48,15 @@ Frontend (Ongoing Development):
 	•	Axios for API calls
 	•	TailwindCSS / Styled Components for UI styling
 
-📦 Installation & Setup
+Installation & Setup
 
-1️⃣ Clone Repository
+Clone Repository
 git clone https://github.com/jFern1010/Shopverse.git
 
 cd shopverse-backend
 
 
-2️⃣ Configure Database
+Configure Database
 
 Update application.properties:
 
@@ -67,13 +67,13 @@ spring.datasource.username=<your-db-username>
 spring.datasource.password=<your-db-password>
 
 
-3️⃣ Run Backend Application
+Run Backend Application
 mvn spring-boot:run
 
 Backend will be available at:
 http://localhost:5000
 
-4️⃣ Run Frontend (Development)
+Run Frontend (Development)
 Open a new terminal and navigate to the frontend folder:
 
 cd Shopverse/frontend
@@ -84,7 +84,7 @@ npm start
 
 The React frontend will run on http://localhost:5173
 It communicates with the backend at http://localhost:5000
-⚠️ The frontend is not fully complete but functional enough to interact with backend APIs.
+The frontend is not fully complete but functional enough to interact with backend APIs.
 
 
 Docker Setup
@@ -102,14 +102,14 @@ http://localhost:5000/swagger-ui/index.html
 
 ⸻
 
-🛠️ Current Status
-	•	✅ Backend: Fully functional and tested
-	•	🔄 Frontend: React.js development in progress
+Current Status
+	•	Backend: Fully functional and tested
+	•	Frontend: React.js development in progress
 (Minimalist and modern UI design inspired by top e-commerce platforms)
 
 ⸻
 
-📌 Notes
+Notes
 
 This backend project is production-ready and currently being integrated with a React frontend.
 Follow the repository for updates on the complete full-stack release.
